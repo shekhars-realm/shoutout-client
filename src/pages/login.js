@@ -3,7 +3,6 @@ import '../App.css';
 import withStyles from '@material-ui/core/styles/withStyles';
 import PropTypes from 'prop-types';
 import AppIcon from '../Images/icon.png';
-import axios from 'axios';
 //Mui Imports
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -11,6 +10,9 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
+//redux imports
+import {connect} from 'react-redux';
+import {loginUser} from '../redux/actions/userActions';
 
 const styles = theme => ({
   form: {
@@ -50,6 +52,15 @@ class Login extends React.Component {
       errors: {}
     }
   }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.UI.errors) {
+      this.setState({
+        errors: nextProps.UI.errors
+      });
+    }
+  }
+
   handleSubmit = (event) => {
     event.preventDefault();
     this.setState({
@@ -59,19 +70,7 @@ class Login extends React.Component {
       email: this.state.email,
       password: this.state.password
     }
-    axios.post('/login', userData).then((res) => {
-      console.log(res.data);
-      localStorage.setItem('FBIdToken', `Bearer ${res.data.token}`);
-      this.setState({
-        loading: false
-      });
-      this.props.history.push('/');
-    }).catch((err) => {
-      this.setState({
-        errors: err.response.data,
-        loading: false
-      })
-    })
+    this.props.loginUser(userData, this.props.history);
   }
   handleChange = (event) => {
     this.setState({
@@ -79,7 +78,8 @@ class Login extends React.Component {
     })
   }
   render() {
-    const {classes} = this.props
+    console.log(this.props)
+    const {classes, UI: {loading}} = this.props
     return (
       <Grid container className={classes.form}>
         <Grid item sm/>
@@ -89,28 +89,28 @@ class Login extends React.Component {
             Login
           </Typography>
           <form noValidate onSubmit={this.handleSubmit}>
-            <TextField 
-              id='email' 
-              name='email' 
-              type='email' 
+            <TextField
+              id='email'
+              name='email'
+              type='email'
               label='Email'
               helperText={this.state.errors.email}
               error={this.state.errors.email ? true : false}
-              fullWidth 
-              className={classes.textField} 
-              value={this.state.email} 
+              fullWidth
+              className={classes.textField}
+              value={this.state.email}
               onChange={this.handleChange}
             />
-            <TextField 
-              id='password' 
-              name='password' 
-              type='password' 
+            <TextField
+              id='password'
+              name='password'
+              type='password'
               label='Password'
               helperText={this.state.errors.password}
               error={this.state.errors.password ? true : false}
-              fullWidth 
-              className={classes.textField} 
-              value={this.state.password} 
+              fullWidth
+              className={classes.textField}
+              value={this.state.password}
               onChange={this.handleChange}
             />
             {
@@ -120,10 +120,10 @@ class Login extends React.Component {
                 </Typography>
               )
             }
-            <Button disabled={this.state.loading} type='submit' variant='contained' color='primary' className={classes.button}>
+            <Button disabled={loading} type='submit' variant='contained' color='primary' className={classes.button}>
               Login
               {
-                this.state.loading && (
+                loading && (
                   <CircularProgress size={30} className={classes.progress}/>
                 )
               }
@@ -139,7 +139,19 @@ class Login extends React.Component {
 }
 
 Login.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  loginUser: PropTypes.func.isRequired,
+  user: PropTypes.object.isRequired,
+  UI: PropTypes.object.isRequired
 }
 
-export default withStyles(styles)(Login);
+const mapStateToProps = (state) => ({
+  user: state.user,
+  UI: state.UI
+});
+
+const mapActionsToProps = {
+  loginUser
+}
+
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Login));
