@@ -1,10 +1,15 @@
 import React from 'react';
 import '../App.css';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 //Mui imports
 import Grid from '@material-ui/core/Grid';
 //import components
-import Shout from '../components/Shout';
+import Shout from '../components/Shout/Shout';
+import Profile from '../components/Profile/Profile';
+//redux imports
+import {connect} from 'react-redux';
+import {getShouts} from '../redux/actions/dataActions'
 
 class Home extends React.Component {
 
@@ -13,24 +18,19 @@ class Home extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('/shouts').then((res) => {
-      this.setState({
-        shouts: res.data
-      })
-    }).catch((err) => {
-      console.log(err);
-    })
+    this.props.getShouts()
   }
   render() {
-    let recentShoutMarkup = this.state.shouts ? (
-      this.state.shouts.map((shout) => {
+    const {shouts, loading} = this.props.data
+    let recentShoutMarkup = !loading ? (
+      shouts.map((shout) => {
         return <Shout key={shout.shoutId} shout={shout}/>
       })
     ) : <p>loading...</p>
     return (
       <Grid container spacing={6}>
         <Grid item sm={4} xs={12}>
-          <p>Profile..</p>
+          <Profile/>
         </Grid>
         <Grid item sm={8} xs={12}>
           {recentShoutMarkup}
@@ -40,4 +40,13 @@ class Home extends React.Component {
   }
 }
 
-export default Home;
+Home.propTypes = {
+  getShouts: PropTypes.func.isRequired,
+  data: PropTypes.object.isRequired
+}
+
+const mapStateToProps = (state) => ({
+  data: state.data
+})
+
+export default connect(mapStateToProps, {getShouts})(Home);
