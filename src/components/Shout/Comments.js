@@ -35,7 +35,7 @@ class Comments extends Component {
     return (
       <Grid container>
         {
-          comments.map((comment) => {
+          comments.map((comment, index) => {
             const {body, createdAt, userImage, userHandle} = comment;
             return (
               <Fragment>
@@ -54,7 +54,9 @@ class Comments extends Component {
                     </Grid>
                   </Grid>
                 </Grid>
-                <hr className={classes.visibleSeparator}/>
+                {
+                  index !== comments.length - 1 && <hr className={classes.visibleSeparator}/>
+                }
               </Fragment>
             )
           })

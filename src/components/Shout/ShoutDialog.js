@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import {Link} from 'react-router-dom';
 import LikeButton from './LikeButton';
 import Comments from './Comments';
+import CommentForm from './CommentForm';
 //Muiimports
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -19,7 +20,7 @@ import UnFoldMore from '@material-ui/icons/UnfoldMore';
 import ChatIcon from '@material-ui/icons/Chat';
 //redux Imports
 import {connect} from 'react-redux';
-import {getShout} from '../../redux/actions/dataActions';
+import {getShout,clearErrors} from '../../redux/actions/dataActions';
 
 const styles = (theme) => ({
   horizontalDivider: {
@@ -57,14 +58,33 @@ const styles = (theme) => ({
 
 class ShoutDialog extends React.Component {
   state={
-    open: false
+    open: false,
+    oldPath: '',
+    newPath: ''
+  }
+  componentDidMount() {
+    if (this.props.openDialog) {
+      this.handleOpen();
+    }
   }
   handleOpen = () => {
-    this.setState({open: true})
+
+    let oldPath = window.location.pathname;
+
+    const { userHandle, shoutId } = this.props;
+    const newPath = `/users/${userHandle}/shout/${shoutId}`;
+
+    if (oldPath === newPath) oldPath = `/users/${userHandle}`;
+
+    window.history.pushState(null, null, newPath);
+
+    this.setState({ open: true, oldPath, newPath });
     this.props.getShout(this.props.shoutId);
   }
   handleClose = () => {
+    window.history.pushState(null, null, this.state.oldPath);
     this.setState({open: false})
+    this.props.clearErrors();
   }
   render () {
     console.log('in dialog: ', this.props);
@@ -89,6 +109,7 @@ class ShoutDialog extends React.Component {
           <span>{commentCount} comments</span>
         </Grid>
         <hr className={classes.visibleSeparator}/>
+        <CommentForm shoutId={shoutId}/>
         <Comments comments={comments}/>
       </Grid>
     )
@@ -130,7 +151,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapActionsToProps = {
-  getShout
+  getShout,
+  clearErrors
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(ShoutDialog));

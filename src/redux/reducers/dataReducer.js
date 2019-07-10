@@ -1,4 +1,4 @@
-import {SET_SHOUTS, SET_SHOUT, LIKE_SHOUT, UNLIKE_SHOUT, LOADING_DATA, DELETE_SHOUT, POST_SHOUT, SET_SCREAM} from '../types';
+import {SET_SHOUTS, SET_SHOUT, LIKE_SHOUT, UNLIKE_SHOUT, LOADING_DATA, DELETE_SHOUT, POST_SHOUT, SET_SCREAM, SUBMIT_COMMENT} from '../types';
 
 const initialState = {
   shouts: [],
@@ -48,6 +48,14 @@ export default function(state = initialState, action) {
           action.payload,
           ...state.shouts
         ]
+      }
+    case SUBMIT_COMMENT:
+      return {
+        ...state,
+        shout: {
+          ...state.shout,
+          comments: [action.payload, ...state.shout.comments]
+        }
       }
     default:
       return {

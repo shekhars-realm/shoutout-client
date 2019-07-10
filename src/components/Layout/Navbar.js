@@ -4,6 +4,7 @@ import '../../App.css'
 import PropTypes from 'prop-types';
 import MyButton from '../../utils/MyButton';
 import PostShout from '../Shout/PostShout';
+import Notifications from './Notifications';
 //redux Imports
 import {connect} from 'react-redux';
 //MUI imports
@@ -30,9 +31,7 @@ class Navbar extends Component {
                     <HomeIcon color='primary'/>
                   </MyButton>
                 </Link>
-                <MyButton tip='Notifications'>
-                  <NotiIcon color='primary'/>
-                </MyButton>
+                <Notifications />
               </Fragment>
             ) : (
               <Fragment>

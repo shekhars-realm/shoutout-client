@@ -74,7 +74,7 @@ class Shout extends React.Component {
             <ChatIcon color='primary'/>
           </MyButton>
           <span>{commentCount} comments</span>
-          <ShoutDialog shoutId={shoutId} userhandle={userHandle}/>
+          <ShoutDialog shoutId={shoutId} userhandle={userHandle} openDialog={this.props.openDialog}/>
         </CardContent>
       </Card>
     );

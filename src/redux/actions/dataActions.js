@@ -1,4 +1,4 @@
-import {SET_SHOUTS, LOADING_DATA, LIKE_SHOUT, UNLIKE_SHOUT, DELETE_SHOUT, POST_SHOUT, LOADING_UI, CLEAR_ERRORS, SET_ERRORS, SET_SHOUT, STOP_LOADING_UI} from '../types';
+import {SET_SHOUTS, LOADING_DATA, LIKE_SHOUT, UNLIKE_SHOUT, DELETE_SHOUT, POST_SHOUT, LOADING_UI, CLEAR_ERRORS, SET_ERRORS, SET_SHOUT, STOP_LOADING_UI, SUBMIT_COMMENT} from '../types';
 import axios from 'axios';
 
 export const getShouts = () => (dispatch) => {
@@ -15,6 +15,24 @@ export const getShouts = () => (dispatch) => {
     })
   })
 }
+
+export const getUserData = (userHandle) => (dispatch) => {
+  dispatch({ type: LOADING_DATA });
+  axios
+    .get(`/user/${userHandle}`)
+    .then((res) => {
+      dispatch({
+        type: SET_SHOUTS,
+        payload: res.data.shouts
+      });
+    })
+    .catch(() => {
+      dispatch({
+        type: SET_SHOUTS,
+        payload: null
+      });
+    });
+};
 
 export const postShout = (shout) => (dispatch) => {
   console.log('in post shout: ', shout);
@@ -89,5 +107,20 @@ export const getShout = (shoutId) => (dispatch) => {
     });
   }).catch((err) => {
     console.log(err);
+  })
+}
+
+export const submitComment = (shoutId, commentData) => (dispatch) => {
+  axios.post(`/shout/${shoutId}/comment`, commentData).then((res) => {
+    dispatch({
+      type: SUBMIT_COMMENT,
+      payload: res.data
+    });
+    dispatch(clearErrors());
+  }).catch((err) => {
+    dispatch({
+      type: SET_ERRORS,
+      payload: err.response.data
+    })
   })
 }

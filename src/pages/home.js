@@ -7,6 +7,7 @@ import Grid from '@material-ui/core/Grid';
 //import components
 import Shout from '../components/Shout/Shout';
 import Profile from '../components/Profile/Profile';
+import ShoutSkeleton from '../utils/ShoutSkeleton';
 //redux imports
 import {connect} from 'react-redux';
 import {getShouts} from '../redux/actions/dataActions'
@@ -26,7 +27,7 @@ class Home extends React.Component {
       shouts.map((shout) => {
         return <Shout key={shout.shoutId} shout={shout}/>
       })
-    ) : <p>loading...</p>
+    ) : <ShoutSkeleton />
     return (
       <Grid container spacing={6}>
         <Grid item sm={4} xs={12}>
